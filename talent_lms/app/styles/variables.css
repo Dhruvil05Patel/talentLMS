@@ -1,25 +1,15 @@
-:root {
-  /* Colors */
-  --primary: #ff6b35;
-  --primary-hover: #f05b23;
+:root{
 
-  --text: #5b6475;
-  --heading: #171717;
+--primary:#ff6b35;
 
-  --white: #ffffff;
-  --section: #f8f9fb;
-  --border: #e7e7e7;
+--green:#00875A;
 
-  /* Radius */
-  --radius-sm: 12px;
-  --radius-md: 18px;
-  --radius-lg: 24px;
-  --radius-full: 999px;
+--text:#242424;
 
-  /* Shadows */
-  --shadow-soft: 0 10px 30px rgba(0,0,0,.05);
-  --shadow-hover: 0 16px 40px rgba(0,0,0,.08);
+--bg:#F7F7F5;
 
-  /* Transition */
-  --transition: .3s ease;
+--border:#D8D8D8;
+
+--radius:999px;
+
 }

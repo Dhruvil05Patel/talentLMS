@@ -1,41 +1,33 @@
-@import "../styles/variables.css";
-@import "../styles/animations.css";
-
 @import "tailwindcss";
+@import "./styles/variables.css";
+@import "./styles/animations.css";
 
-/* CSS Reset */
-
-* {
-  margin: 0;
-  padding: 0;
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-/* Global Typography */
-
 html {
   scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  font-family: var(--font-inter);
-  color: var(--text);
-  background: var(--white);
+  margin: 0;
+  min-width: 100%;
   overflow-x: hidden;
-}
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: var(--heading);
-  font-weight: 700;
-}
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1;
 
-p {
-  line-height: 1.7;
+  color: #202124;
+  background: #f7f7f5;
+
+  text-rendering: optimizeLegibility;
 }
 
 a {
@@ -43,12 +35,32 @@ a {
   text-decoration: none;
 }
 
-img {
-  display: block;
-  max-width: 100%;
+button,
+input,
+textarea,
+select {
+  font: inherit;
 }
 
-button {
-  font: inherit;
-  cursor: pointer;
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
 }
