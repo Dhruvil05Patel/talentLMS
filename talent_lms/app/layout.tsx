@@ -1,3 +1,4 @@
+import { format } from "path/win32";
 import "./globals.css";
 import { Plus_Jakarta_Sans } from "next/font/google";
 
@@ -7,6 +8,7 @@ const jakarta = Plus_Jakarta_Sans({
   weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
+
 
 export default function RootLayout({
   children,
