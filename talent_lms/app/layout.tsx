@@ -1,4 +1,3 @@
-import { format } from "path/win32";
 import "./globals.css";
 import { Plus_Jakarta_Sans } from "next/font/google";
 
@@ -9,7 +8,6 @@ const jakarta = Plus_Jakarta_Sans({
   display: "swap",
 });
 
-
 export default function RootLayout({
   children,
 }: {
@@ -17,7 +15,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={jakarta.variable}>
+      {/* 
+        By hard-mapping your local font families right here on the wrapper class list, 
+        your custom component styles (like fontFamily: "Hornbill") can instantly read the variables!
+      */}
+      <body className={`${jakarta.variable} antialiased`}>
         {children}
       </body>
     </html>
