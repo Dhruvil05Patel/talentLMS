@@ -15,7 +15,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={jakarta.variable}>
+      {/* 
+        By hard-mapping your local font families right here on the wrapper class list, 
+        your custom component styles (like fontFamily: "Hornbill") can instantly read the variables!
+      */}
+      <body className={`${jakarta.variable} antialiased`}>
         {children}
       </body>
     </html>

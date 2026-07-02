@@ -2,6 +2,21 @@
 @import "./styles/variables.css";
 @import "./styles/animations.css";
 
+/* 1. Register your font-face engines natively */
+@font-face {
+  font-family: 'Hornbill';
+  src: url('/fonts/Hornbill-Personal Use Regular.otf') format('opentype');
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Axiforma';
+  src: url('/fonts/Axiforma Medium.otf') format('opentype');
+  font-weight: 500;
+  font-display: swap;
+}
+
 *,
 *::before,
 *::after {
@@ -19,13 +34,14 @@ body {
   min-width: 100%;
   overflow-x: hidden;
 
+  /* 2. Bind all typography variables together here */
   font-family: var(--font-jakarta), sans-serif;
   font-size: 16px;
   font-weight: 500;
   line-height: 1;
 
   color: #202124;
-  background: #f7f7f5;
+  /* REMOVED: background #ffff completely so page.tsx handles theme controls natively */
 
   text-rendering: optimizeLegibility;
 }
@@ -35,32 +51,25 @@ a {
   text-decoration: none;
 }
 
-button,
-input,
-textarea,
-select {
+button, input, textarea, select {
   font: inherit;
 }
 
-
-img,
-svg {
+img, svg {
   display: block;
   max-width: 100%;
   height: auto;
 }
 
-ul,
-ol {
+ul, ol {
   list-style: none;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p {
+h1, h2, h3, h4, h5, h6, p {
   margin: 0;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-100%); }
 }
