@@ -1,17 +1,26 @@
 "use client";
 
 import Link from "next/link";
+import { useRef, useState } from "react";
 
 export default function VideoSection() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isMuted, setIsMuted] = useState(true);
+
+  // Simple click handler to toggle audio stream seamlessly
+  const toggleMute = () => {
+    if (videoRef.current) {
+      const currentMuteState = videoRef.current.muted;
+      videoRef.current.muted = !currentMuteState;
+      setIsMuted(!currentMuteState);
+    }
+  };
+
   return (
     <section className="w-full bg-[#f7f7f5] pt-16 pb-20 overflow-hidden select-none">
-      {/* 
-        MAIN WRAPPER CONTAINER: 
-        Matches the maximum structural bounds (1340px) shown in SCR-20260701-przo.jpg 
-      */}
       <div className="mx-auto max-w-[1340px] px-6 md:px-12 flex flex-col items-center text-center w-full">
         
-        {/* Brand Icon: ROI Icon matching the source code configuration */}
+        {/* Brand Icon */}
         <div className="mb-6 select-none pointer-events-none flex justify-center">
           <img 
             src="https://images.www.talentlms.com/wp-content/plugins/talent-blocks/assets/images/brand-icons/roi.svg" 
@@ -22,7 +31,7 @@ export default function VideoSection() {
           />
         </div>
 
-        {/* Heading: Using Hornbill with support for numbers via Georgia fallback */}
+        {/* Heading */}
         <h2 
           className="text-3xl md:text-4xl lg:text-[40px] font-semibold tracking-tight leading-[1.2] text-[#181E26] max-w-3xl mb-5"
           style={{ fontFamily: "Hornbill, Georgia, serif" }}
@@ -30,7 +39,7 @@ export default function VideoSection() {
           How a team of two built a global training academy in 8 months
         </h2>
 
-        {/* Subtext Description Paragraph: Using Axiforma */}
+        {/* Subtext */}
         <p 
           className="text-base md:text-[16px] font-medium leading-[1.6] text-[#242424] opacity-85 max-w-4xl mb-12"
           style={{ fontFamily: "Axiforma, sans-serif" }}
@@ -39,31 +48,48 @@ export default function VideoSection() {
           3 years on, Smartbox Academy reaches 12,000+ learners across 37 countries.
         </p>
 
-        {/* 
-          VIDEO DISPLAY CORE: 
-          Implements the yellow border wrapper matching 'has-yellow-600-border-color' 
-          and border-radius bounds from the source code.
-        */}
+        {/* VIDEO CONTAINER LAYER TRACK */}
         <div className="w-full max-w-[960px] border-[6px] border-[#FFC82C] rounded-[28px] overflow-hidden bg-black shadow-sm mb-10 relative group">
           <video
-            className="w-full h-auto object-cover block"
+            ref={videoRef}
+            className="w-full h-auto object-cover block cursor-pointer"
             style={{ aspectRatio: "1280 / 720" }}
             autoPlay
             loop
-            muted
+            muted={isMuted}
             playsInline
+            controls 
             src="https://www.talentlms.com/wp-content/uploads/2026/06/smartbox_homepage-preview.mp4"
           />
           
-          {/* Subtle Video Context HUD Overlays (Like the Unmute Indicator) */}
-          <div className="absolute top-4 right-4 z-10 bg-black/60 backdrop-blur-sm rounded-full p-2 text-white pointer-events-none opacity-80 group-hover:opacity-100 transition-opacity">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06zM13.5 8a5.5 5.5 0 0 1-8.156 4.854l.707-.707A4.5 4.5 0 1 0 12.5 8c0-1.258-.512-2.397-1.341-3.226l.707-.707A5.472 5.472 0 0 1 13.5 8z"/>
-            </svg>
-          </div>
+          {/* 
+            CUSTOM INTERACTIVE AUDIO TOGGLE HUD:
+            Positions an accessible interactive mute trigger button in the upper corner, 
+            matching the presentation in SCR-20260702-owpt.jpg.
+          */}
+          <button 
+            onClick={toggleMute}
+            type="button"
+            className="absolute top-4 right-4 z-30 bg-black/60 hover:bg-black/80 backdrop-blur-sm rounded-full p-2.5 text-white transition-all duration-200 cursor-pointer border border-white/10 active:scale-95"
+            aria-label={isMuted ? "Unmute video feedback" : "Mute video audio tracking"}
+          >
+            {isMuted ? (
+              /* Muted Vector Shape Graphic */
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06zm7.137 2.096a.5.5 0 0 1 0 .708L12.207 8l1.647 1.646a.5.5 0 0 1-.708.708L11.5 8.707l-1.646 1.647a.5.5 0 0 1-.708-.708L10.793 8 9.146 6.354a.5.5 0 1 1 .708-.708L11.5 7.293l1.646-1.647a.5.5 0 0 1 .708 0z"/>
+              </svg>
+            ) : (
+              /* Active Audio Playing Waves Shape Graphic */
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M11.536 14.01A8.473 8.473 0 0 0 14 8c0-2.26-.882-4.315-2.322-5.836a.5.5 0 1 0-.732.682C12.253 4.221 13 6.03 13 8c0 1.97-.747 3.779-2.086 5.154a.5.5 0 1 0 .722.706z"/>
+                <path d="M9.77 12.239A6.47 6.47 0 0 0 11 8c0-1.65-.618-3.156-1.635-4.31a.5.5 0 0 0-.749.663C9.488 5.258 10 6.568 10 8c0 1.431-.512 2.742-1.353 3.693a.5.5 0 0 0 .749.662z"/>
+                <path d="M6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06z"/>
+              </svg>
+            )}
+          </button>
         </div>
 
-        {/* Action Link Button Area with Link Text Underline Interaction */}
+        {/* Action Link Button Area */}
         <div className="flex justify-center items-center">
           <Link
             href="https://www.talentlms.com/customers/smartbox"
