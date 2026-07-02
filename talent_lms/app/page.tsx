@@ -9,6 +9,7 @@ import Testimony from './components/home/Testimony';
 import Library from './components/home/Library';
 import Awards from './components/home/Awards';
 import SignupForm from './components/home/SignUpForm';
+import Footer from './components/layout/Footer';
 
 
 export default function Home() {
@@ -27,6 +28,7 @@ export default function Home() {
       <Library/>
       <Awards/>
       <SignupForm/>
+      <Footer/>
     </main>
   );
 }
