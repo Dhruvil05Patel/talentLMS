@@ -10,9 +10,15 @@ export default function DropdownSolutions({ onMouseEnter, onMouseLeave }) {
   const tabs = [
     { id: "useCases", label: "By use case" },
     { id: "industries", label: "By industry" },
+    { id: "aiSolution", label: "AI Solutions" },
   ];
 
-  const items = activeTab === "useCases" ? solutionsData.useCases : solutionsData.industries;
+  const items =
+    activeTab === "useCases"
+      ? solutionsData.useCases
+      : activeTab === "industries"
+      ? solutionsData.industries
+      : solutionsData.aiSolution;
 
   // Simple icon placeholders matching the structure of your previous dropdown setups
   const fallbackIcons = ["👥", "👤+", "🧼", "🔐", "🤝", "🛡️"];

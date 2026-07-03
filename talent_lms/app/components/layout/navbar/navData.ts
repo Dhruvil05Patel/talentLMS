@@ -85,6 +85,10 @@ export const solutionsData = {
     { label: "Financial services", url: "/industries/financial‑services" },
     { label: "Nonprofit", url: "/industries/non‑profit" },
   ],
+  aiSolution: [
+    { label: "AI Progress Summarizer", url: "/ai-progress-summarizer" },
+    { label: "NudgeBot", url: "/nudgebot" },
+  ],
 };
 
 // Customers dropdown data
