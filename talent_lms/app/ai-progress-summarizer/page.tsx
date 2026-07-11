@@ -4,8 +4,15 @@ import { useMemo, useState } from "react";
 import Navbar from "../components/layout/navbar/Navbar";
 import Footer from "../components/layout/Footer";
 
-type Risk = "on-track" | "at-risk" | "overdue";
+type Risk = "on-track" | "at-risk" | "overdue" | "no-data";
 type StatusFilter = "all" | Risk;
+
+const riskStyles: Record<Risk, { badge: string; border: string; bar: string }> = {
+  "on-track": { badge: "bg-[#F0FDF4] text-[#15803D]", border: "border-l-[#15803D]", bar: "#15803D" },
+  "at-risk": { badge: "bg-[#FFF2EA] text-[#F96A1E]", border: "border-l-[#F96A1E]", bar: "#F96A1E" },
+  overdue: { badge: "bg-[#FEF2F2] text-[#DC2626]", border: "border-l-[#DC2626]", bar: "#DC2626" },
+  "no-data": { badge: "bg-[#EEF0F5] text-[#9AA0B5]", border: "border-l-[#9AA0B5]", bar: "#9AA0B5" },
+};
 
 interface Learner {
   id: number;
@@ -93,21 +100,26 @@ export default function ProgressSummarizerPage() {
   }
 
   return (
-    <main className="w-full min-h-screen bg-[#f7f7f5]">
+    <main className="w-full min-h-screen bg-[#FAF8F3]">
       <Navbar />
 
       <section className="mx-auto max-w-335 px-6 py-8 md:px-12">
-        <div className="sticky top-19 z-20 bg-[#f7f7f5] pb-6 pt-2">
+        <div className="sticky top-19 z-20 bg-[#FAF8F3] pb-6 pt-2">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900">AI Progress Summarizer</h1>
-              <p className="text-slate-500">Auto-generated summaries from TalentLMS data</p>
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-1 bg-[#F96A1E]" />
+              <div>
+                <h1 className="font-[family-name:var(--font-jakarta)] text-3xl font-bold text-[#1A2B5B]">
+                  AI Progress Summarizer
+                </h1>
+                <p className="text-[#5C6680]">Auto-generated summaries from TalentLMS data</p>
+              </div>
             </div>
 
             <button
               onClick={generate}
               disabled={loading}
-              className="rounded-lg bg-blue-600 px-5 py-3 text-white disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-full bg-[#1A5438] px-5 py-3 text-white transition hover:bg-[#123B28] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? "Generating..." : "Generate All Summaries"}
             </button>
@@ -115,28 +127,28 @@ export default function ProgressSummarizerPage() {
 
           <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
             {[
-              ["Total", stats.total],
-              ["On Track", stats.onTrack],
-              ["At Risk", stats.atRisk],
-              ["Overdue", stats.overdue],
-            ].map(([title, value]) => (
-              <div key={String(title)} className="rounded-xl bg-white p-5 shadow-sm">
-                <p className="text-3xl font-bold text-slate-900">{value}</p>
-                <p className="text-slate-500">{title}</p>
+              ["Total", stats.total, "border-t-[3px] border-[#1A2B5B]", "text-[#1A2B5B]"],
+              ["On Track", stats.onTrack, "border-t-[3px] border-[#15803D]", "text-[#15803D]"],
+              ["At Risk", stats.atRisk, "border-t-[3px] border-[#F96A1E]", "text-[#F96A1E]"],
+              ["Overdue", stats.overdue, "border-t-[3px] border-[#DC2626]", "text-[#DC2626]"],
+            ].map(([title, value, topBorder, valueColor]) => (
+              <div key={String(title)} className={`rounded-xl bg-white p-5 shadow-sm ${topBorder}`}>
+                <p className={`text-3xl font-bold ${valueColor}`}>{value}</p>
+                <p className="text-[#5C6680]">{title}</p>
               </div>
             ))}
           </div>
 
           <div className="mt-6 flex flex-wrap gap-4 rounded-xl bg-white p-4 shadow-sm">
             <input
-              className="rounded border border-slate-200 px-3 py-2 outline-none focus:border-blue-500"
+              className="rounded border border-slate-200 px-3 py-2 outline-none focus:border-[#F96A1E] focus:ring-2 focus:ring-[#F96A1E]"
               placeholder="Search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
 
             <select
-              className="rounded border border-slate-200 px-3 py-2 outline-none focus:border-blue-500"
+              className="rounded border border-slate-200 px-3 py-2 outline-none focus:border-[#F96A1E] focus:ring-2 focus:ring-[#F96A1E]"
               value={status}
               onChange={(event) => setStatus(event.target.value as StatusFilter)}
             >
@@ -150,38 +162,48 @@ export default function ProgressSummarizerPage() {
 
         <div className="mt-8 grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
           {filtered.map((learner) => (
-            <article key={learner.id} className="rounded-xl bg-white p-5 shadow-sm">
+            <article
+              key={learner.id}
+              className={`rounded-xl bg-white p-5 shadow-sm border-l-4 ${riskStyles[learner.risk].border}`}
+            >
               <div className="flex justify-between gap-4">
                 <div>
-                  <h2 className="font-semibold text-slate-900">{learner.name}</h2>
-                  <p className="text-sm text-slate-500">{learner.email}</p>
+                  <h2 className="font-[family-name:var(--font-jakarta)] font-semibold text-[#1A2B5B]">
+                    {learner.name}
+                  </h2>
+                  <p className="text-sm text-[#5C6680]">{learner.email}</p>
                 </div>
 
-                <span className="rounded-full bg-slate-200 px-3 py-1 text-xs capitalize text-slate-700">
+                <span
+                  className={`rounded-[6px] px-3 py-1 text-[11px] font-semibold uppercase ${riskStyles[learner.risk].badge}`}
+                >
                   {learner.risk}
                 </span>
               </div>
 
               <div className="mt-5">
-                <p className="text-sm text-slate-700">{learner.course}</p>
+                <p className="text-sm text-[#5C6680]">{learner.course}</p>
 
-                <div className="mt-2 h-3 w-full rounded-full bg-slate-200">
+                <div className="mt-2 h-3 w-full rounded-full bg-[#EDE8DE]">
                   <div
-                    className="h-3 rounded-full bg-blue-600"
-                    style={{ width: `${learner.progress}%` }}
+                    className="h-3 rounded-full"
+                    style={{
+                      width: `${learner.progress}%`,
+                      backgroundColor: riskStyles[learner.risk].bar,
+                    }}
                   />
                 </div>
 
-                <p className="mt-2 text-sm text-slate-700">{learner.progress}% Complete</p>
+                <p className="mt-2 text-sm text-[#5C6680]">{learner.progress}% Complete</p>
 
-                <div className="mt-4 grid grid-cols-2 gap-2 text-sm text-slate-700">
+                <div className="mt-4 grid grid-cols-2 gap-2 text-sm text-[#5C6680]">
                   <div>Last Active: {learner.lastActive}d</div>
                   <div>Quiz Avg: {learner.quiz}%</div>
                   <div>Deadline</div>
                   <div>{learner.deadline}</div>
                 </div>
 
-                <div className="mt-5 rounded-lg border border-blue-100 bg-blue-50 p-4 text-slate-800">
+                <div className="mt-5 rounded-lg border border-[#FDDBC4] bg-[#FFF2EA] p-4 text-[#1A2B5B]">
                   {loading ? "Generating summary..." : learner.summary}
                 </div>
               </div>
