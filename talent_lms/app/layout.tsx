@@ -14,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       {/* 
         By hard-mapping your local font families right here on the wrapper class list, 
         your custom component styles (like fontFamily: "Hornbill") can instantly read the variables!
