@@ -1,5 +1,6 @@
 import "./globals.css";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
+import { AuthProvider } from "@/components/AuthProvider";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -22,12 +23,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" data-scroll-behavior="smooth">
-      {/*
-        By hard-mapping your local font families right here on the wrapper class list,
-        your custom component styles (like fontFamily: "Hornbill") can instantly read the variables!
-      */}
       <body className={`${jakarta.variable} ${inter.variable} antialiased`}>
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
