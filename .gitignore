@@ -43,3 +43,11 @@ next-env.d.ts
 .claude
 
 CLAUDE.md
+AGENTS.md
+.opencode/
+.cursor/
+.windsurf/
+.clinerules/
+.codex/
+dummy-creds.txt
+.github/copilot-instructions.md
