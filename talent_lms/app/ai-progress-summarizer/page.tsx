@@ -1,215 +1,198 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { AuthContext } from "@/components/AuthProvider";
+import { useContext } from "react";
+import {
+  Users,
+  CheckCircle2,
+  AlertTriangle,
+  Clock3,
+} from "lucide-react";
+
 import Navbar from "../components/layout/navbar/Navbar";
 import Footer from "../components/layout/Footer";
+import PageHeader from "./components/PageHeader";
+import FilterBar from "./components/FilterBar";
+import SummaryGrid from "./components/SummaryGrid";
+import SummaryTable from "./components/SummaryTable";
+import LoadingSkeleton from "./components/LoadingSkeleton";
+import EmptyState from "./components/EmptyState";
+import KPICard from "./components/KPICard";
 
-type Risk = "on-track" | "at-risk" | "overdue" | "no-data";
-type StatusFilter = "all" | Risk;
-
-const riskStyles: Record<Risk, { badge: string; border: string; bar: string }> = {
-  "on-track": { badge: "bg-[#F0FDF4] text-[#15803D]", border: "border-l-[#15803D]", bar: "#15803D" },
-  "at-risk": { badge: "bg-[#FFF2EA] text-[#F96A1E]", border: "border-l-[#F96A1E]", bar: "#F96A1E" },
-  overdue: { badge: "bg-[#FEF2F2] text-[#DC2626]", border: "border-l-[#DC2626]", bar: "#DC2626" },
-  "no-data": { badge: "bg-[#EEF0F5] text-[#9AA0B5]", border: "border-l-[#9AA0B5]", bar: "#9AA0B5" },
-};
-
-interface Learner {
-  id: number;
-  name: string;
-  email: string;
-  course: string;
-  group: string;
-  progress: number;
-  lastActive: number;
-  quiz: number;
-  deadline: string;
-  risk: Risk;
-  summary: string;
-}
-
-const courseNames = ["Safety", "HIPAA", "Cyber Security", "Leadership"];
-const groupNames = ["HR", "Sales", "IT", "Finance"];
-
-function getRisk(progress: number, lastActive: number, quiz: number): Risk {
-  if (progress >= 75 && lastActive <= 5 && quiz >= 70) return "on-track";
-  if (progress >= 40 && lastActive <= 10 && quiz >= 50) return "at-risk";
-  return "overdue";
-}
-
-const learners: Learner[] = Array.from({ length: 50 }, (_, index) => {
-  const progress = (index * 13 + 25) % 101;
-  const lastActive = ((index * 3) % 15) + 1;
-  const quiz = (index * 17 + 38) % 101;
-  const risk = getRisk(progress, lastActive, quiz);
-
-  return {
-    id: index + 1,
-    name: `Learner ${index + 1}`,
-    email: `learner${index + 1}@company.com`,
-    course: courseNames[index % courseNames.length],
-    group: groupNames[index % groupNames.length],
-    progress,
-    lastActive,
-    quiz,
-    deadline: "2026-07-20",
-    risk,
-    summary: "Click Generate All Summaries to create an AI summary.",
-  };
-});
+import { Learner, ViewMode } from "./types/summarizer";
+import {
+  fetchLearners,
+  generateAllSummaries,
+  regenerateSummary,
+} from "./lib/api";
+import { courses } from "./data/courses";
+import { groups } from "./data/groups";
 
 export default function ProgressSummarizerPage() {
-  const [data, setData] = useState(learners);
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<StatusFilter>("all");
+  const { isAuthenticated, loadSession } = useContext(AuthContext);
+  const router = useRouter();
+  const [learners, setLearners] = useState<Learner[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
+  const [view, setView] = useState<ViewMode>("cards");
   const [search, setSearch] = useState("");
+  const [course, setCourse] = useState("all");
+  const [group, setGroup] = useState("all");
+  const [risk, setRisk] = useState("all");
+  const [error, setError] = useState<string | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated === false && authChecked) {
+      router.push("/login");
+    }
+  }, [isAuthenticated, authChecked, router]);
+
+  useEffect(() => {
+    loadSession().then(() => {
+      setAuthChecked(true);
+    });
+  }, [loadSession]);
+
+  async function load() {
+    if (!isAuthenticated) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchLearners({ course, group, risk });
+      setLearners(data);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load learners");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [course, group, risk, isAuthenticated]);
 
   const filtered = useMemo(() => {
-    const query = search.toLowerCase();
+    const q = search.trim().toLowerCase();
+    return learners.filter(
+      (l) =>
+        (q === "" ||
+          l.name.toLowerCase().includes(q) ||
+          l.email.toLowerCase().includes(q)) &&
+        (course === "all" || l.courseName === course) &&
+        (group === "all" || l.groupName === group) &&
+        (risk === "all" || l.risk === risk)
+    );
+  }, [learners, search, course, group, risk]);
 
-    return data.filter((learner) => {
-      const matchesStatus = status === "all" || learner.risk === status;
-      const matchesSearch =
-        learner.name.toLowerCase().includes(query) || learner.email.toLowerCase().includes(query);
+  const stats = useMemo(
+    () => ({
+      total: learners.length,
+      onTrack: learners.filter((l) => l.risk === "on-track").length,
+      atRisk: learners.filter((l) => l.risk === "at-risk").length,
+      overdue: learners.filter((l) => l.risk === "overdue").length,
+    }),
+    [learners]
+  );
 
-      return matchesStatus && matchesSearch;
-    });
-  }, [data, status, search]);
-
-  const stats = {
-    total: data.length,
-    onTrack: data.filter((entry) => entry.risk === "on-track").length,
-    atRisk: data.filter((entry) => entry.risk === "at-risk").length,
-    overdue: data.filter((entry) => entry.risk === "overdue").length,
-  };
-
-  async function generate() {
-    setLoading(true);
-    const updated = [...data];
-
-    for (let index = 0; index < updated.length; index += 1) {
-      await new Promise((resolve) => setTimeout(resolve, 40));
-      updated[index] = {
-        ...updated[index],
-        summary: `${updated[index].name} has completed ${updated[index].progress}% of ${updated[index].course}. They were last active ${updated[index].lastActive} day(s) ago and scored ${updated[index].quiz}% on quizzes. Current risk: ${updated[index].risk}.`,
-      };
-      setData([...updated]);
+  async function handleGenerateAll() {
+    setGenerating(true);
+    try {
+      const updated = await generateAllSummaries(learners);
+      setLearners(updated);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to generate summaries");
+    } finally {
+      setGenerating(false);
     }
+  }
 
-    setLoading(false);
+  async function handleRegenerate(id: number) {
+    const updated = await regenerateSummary(id, learners);
+    if (updated) {
+      setLearners((prev) => prev.map((l) => (l.id === id ? updated : l)));
+    }
+  }
+
+  if (!authChecked) {
+    return (
+      <main className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center py-16">Loading...</div>
+      </main>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Will redirect via useEffect
   }
 
   return (
-    <main className="w-full min-h-screen bg-[#FAF8F3]">
+    <main className="min-h-screen bg-gray-50">
       <Navbar />
 
-      <section className="mx-auto max-w-335 px-6 py-8 md:px-12">
-        <div className="sticky top-19 z-20 bg-[#FAF8F3] pb-6 pt-2">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex items-center gap-3">
-              <div className="h-8 w-1 bg-[#F96A1E]" />
-              <div>
-                <h1 className="font-[family-name:var(--font-jakarta)] text-3xl font-bold text-[#1A2B5B]">
-                  AI Progress Summarizer
-                </h1>
-                <p className="text-[#5C6680]">Auto-generated summaries from TalentLMS data</p>
-              </div>
-            </div>
+      <section className="mx-auto max-w-7xl px-6 py-10">
+        <PageHeader generating={generating} onGenerate={handleGenerateAll} />
 
-            <button
-              onClick={generate}
-              disabled={loading}
-              className="rounded-full bg-[#1A5438] px-5 py-3 text-white transition hover:bg-[#123B28] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {loading ? "Generating..." : "Generate All Summaries"}
-            </button>
+        {error && (
+          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
           </div>
+        )}
 
-          <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-            {[
-              ["Total", stats.total, "border-t-[3px] border-[#1A2B5B]", "text-[#1A2B5B]"],
-              ["On Track", stats.onTrack, "border-t-[3px] border-[#15803D]", "text-[#15803D]"],
-              ["At Risk", stats.atRisk, "border-t-[3px] border-[#F96A1E]", "text-[#F96A1E]"],
-              ["Overdue", stats.overdue, "border-t-[3px] border-[#DC2626]", "text-[#DC2626]"],
-            ].map(([title, value, topBorder, valueColor]) => (
-              <div key={String(title)} className={`rounded-xl bg-white p-5 shadow-sm ${topBorder}`}>
-                <p className={`text-3xl font-bold ${valueColor}`}>{value}</p>
-                <p className="text-[#5C6680]">{title}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-6 flex flex-wrap gap-4 rounded-xl bg-white p-4 shadow-sm">
-            <input
-              className="rounded border border-slate-200 px-3 py-2 outline-none focus:border-[#F96A1E] focus:ring-2 focus:ring-[#F96A1E]"
-              placeholder="Search"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-            />
-
-            <select
-              className="rounded border border-slate-200 px-3 py-2 outline-none focus:border-[#F96A1E] focus:ring-2 focus:ring-[#F96A1E]"
-              value={status}
-              onChange={(event) => setStatus(event.target.value as StatusFilter)}
-            >
-              <option value="all">All</option>
-              <option value="on-track">On Track</option>
-              <option value="at-risk">At Risk</option>
-              <option value="overdue">Overdue</option>
-            </select>
-          </div>
+        <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <KPICard
+            title="Total Learners"
+            value={stats.total}
+            icon={<Users size={20} />}
+            color="bg-blue-100 text-blue-600"
+          />
+          <KPICard
+            title="On Track"
+            value={stats.onTrack}
+            icon={<CheckCircle2 size={20} />}
+            color="bg-emerald-100 text-emerald-600"
+          />
+          <KPICard
+            title="At Risk"
+            value={stats.atRisk}
+            icon={<AlertTriangle size={20} />}
+            color="bg-amber-100 text-amber-600"
+          />
+          <KPICard
+            title="Overdue"
+            value={stats.overdue}
+            icon={<Clock3 size={20} />}
+            color="bg-red-100 text-red-600"
+          />
         </div>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-          {filtered.map((learner) => (
-            <article
-              key={learner.id}
-              className={`rounded-xl bg-white p-5 shadow-sm border-l-4 ${riskStyles[learner.risk].border}`}
-            >
-              <div className="flex justify-between gap-4">
-                <div>
-                  <h2 className="font-[family-name:var(--font-jakarta)] font-semibold text-[#1A2B5B]">
-                    {learner.name}
-                  </h2>
-                  <p className="text-sm text-[#5C6680]">{learner.email}</p>
-                </div>
+        <FilterBar
+          search={search}
+          setSearch={setSearch}
+          course={course}
+          setCourse={setCourse}
+          group={group}
+          setGroup={setGroup}
+          risk={risk}
+          setRisk={setRisk}
+          courses={courses}
+          groups={groups}
+          view={view}
+          setView={setView}
+        />
 
-                <span
-                  className={`rounded-[6px] px-3 py-1 text-[11px] font-semibold uppercase ${riskStyles[learner.risk].badge}`}
-                >
-                  {learner.risk}
-                </span>
-              </div>
-
-              <div className="mt-5">
-                <p className="text-sm text-[#5C6680]">{learner.course}</p>
-
-                <div className="mt-2 h-3 w-full rounded-full bg-[#EDE8DE]">
-                  <div
-                    className="h-3 rounded-full"
-                    style={{
-                      width: `${learner.progress}%`,
-                      backgroundColor: riskStyles[learner.risk].bar,
-                    }}
-                  />
-                </div>
-
-                <p className="mt-2 text-sm text-[#5C6680]">{learner.progress}% Complete</p>
-
-                <div className="mt-4 grid grid-cols-2 gap-2 text-sm text-[#5C6680]">
-                  <div>Last Active: {learner.lastActive}d</div>
-                  <div>Quiz Avg: {learner.quiz}%</div>
-                  <div>Deadline</div>
-                  <div>{learner.deadline}</div>
-                </div>
-
-                <div className="mt-5 rounded-lg border border-[#FDDBC4] bg-[#FFF2EA] p-4 text-[#1A2B5B]">
-                  {loading ? "Generating summary..." : learner.summary}
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
+        {loading ? (
+          <LoadingSkeleton />
+        ) : filtered.length === 0 ? (
+          <EmptyState />
+        ) : view === "cards" ? (
+          <SummaryGrid learners={filtered} onRegenerate={handleRegenerate} />
+        ) : (
+          <SummaryTable learners={filtered} onRegenerate={handleRegenerate} />
+        )}
       </section>
 
       <Footer />
