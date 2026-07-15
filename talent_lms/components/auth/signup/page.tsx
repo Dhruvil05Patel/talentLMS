@@ -1,5 +1,6 @@
 'use client';
 import Link from "next/link";
+import { FormEvent } from "react";
 import { useState } from "react";
 
 export default function SignupPage() {
@@ -9,7 +10,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     alert('Form submitted');
   };

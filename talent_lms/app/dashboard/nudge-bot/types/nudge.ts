@@ -2,7 +2,8 @@ export type NudgeChannel =
   | "email"
   | "slack"
   | "whatsapp"
-  | "in-portal";
+  | "in-portal"
+  | "in-app";
 
 export type RuleSchedule =
   | "manual"
@@ -23,12 +24,31 @@ export type DeliveryStatus =
   | "sent"
   | "failed"
   | "pending"
+  | "queued"
   | "skipped";
+
+export type NudgeTab =
+  | "overview"
+  | "rules"
+  | "history"
+  | "settings";
 
 export interface NudgeRule {
   id: string;
 
   name: string;
+
+  audience?: string;
+
+  trigger?: string;
+
+  cadence?: string;
+
+  successRate?: number;
+
+  message?: string;
+
+  status?: "active" | "paused" | "inactive";
 
   enabled: boolean;
 
@@ -133,4 +153,42 @@ export interface DryRunResult {
     | "skip";
 
   reason?: string;
+}
+
+export interface NudgeHistoryItem {
+  id: string;
+
+  ruleName: string;
+
+  audience: string;
+
+  channel: NudgeChannel;
+
+  status: DeliveryStatus;
+
+  createdAt: string;
+
+  engagement: string;
+
+  notes: string;
+}
+
+export interface NudgeSettings {
+  quietHours: string;
+
+  timezone: string;
+
+  sendDigest: boolean;
+
+  dryRunMode: boolean;
+
+  defaultChannel: NudgeChannel;
+}
+
+export interface NudgePreview {
+  title: string;
+
+  body?: string;
+
+  tone: "success" | "warning" | "neutral";
 }

@@ -4,7 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { solutionsData } from "./navData";
 
-export default function DropdownSolutions({ onMouseEnter, onMouseLeave }) {
+type DropdownProps = {
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+};
+
+export default function DropdownSolutions({ onMouseEnter, onMouseLeave }: DropdownProps) {
   const [activeTab, setActiveTab] = useState("useCases"); // "useCases" or "industries"
 
   const tabs = [

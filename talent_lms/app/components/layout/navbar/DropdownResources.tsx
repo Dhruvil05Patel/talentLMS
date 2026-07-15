@@ -3,12 +3,17 @@
 import Link from "next/link";
 import { resourcesData } from "./navData";
 
-export default function DropdownResources({ onMouseEnter, onMouseLeave }) {
+type DropdownProps = {
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+};
+
+export default function DropdownResources({ onMouseEnter, onMouseLeave }: DropdownProps) {
   // Fallback icon map based on the order of your items in navData.ts
   const fallbackIcons = ["📝", "💻", "🎙️", "📚", "🔍", "❓", "📊"];
 
   // Helper function to dynamically style the badges to match the reference image
-  const getBadgeStyles = (badge) => {
+  const getBadgeStyles = (badge: string) => {
     if (badge.toLowerCase().includes("episode")) {
       return "text-[#E14817] text-[11px] font-bold flex items-center gap-1";
     }
@@ -73,7 +78,7 @@ export default function DropdownResources({ onMouseEnter, onMouseLeave }) {
               Why capability is now a business metric
             </h4>
             <p className="text-xs text-gray-500 leading-relaxed mb-4">
-              Most organizations can't connect skills to business results. Shannon Tipton shares how to build skills visibility and measure real capability growth.
+              Most organizations can&apos;t connect skills to business results. Shannon Tipton shares how to build skills visibility and measure real capability growth.
             </p>
           </div>
 

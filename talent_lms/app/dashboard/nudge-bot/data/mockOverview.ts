@@ -1,4 +1,4 @@
-import { ConnectedChannel, OverviewStats, UpcomingRun } from "../types/nudge";
+import { ConnectedChannel, DryRunResult, OverviewStats, UpcomingRun } from "../types/nudge";
 
 export const overviewStats: OverviewStats = {
   totalSent: 1842,
@@ -62,6 +62,37 @@ export const upcomingRuns: UpcomingRun[] = [
   },
 ];
 
+export const dryRunResults: DryRunResult[] = [
+  {
+    learner: "John Doe",
+    course: "Safety Training",
+    channel: "email",
+    status: "send",
+    reason: "last nudge: 4d ago",
+  },
+  {
+    learner: "Priya Singh",
+    course: "Onboarding 101",
+    channel: "slack",
+    status: "send",
+    reason: "last nudge: never",
+  },
+  {
+    learner: "Mark Thompson",
+    course: "Data Privacy",
+    channel: "email",
+    status: "skip",
+    reason: "cooldown (18h left)",
+  },
+  {
+    learner: "Sarah Lee",
+    course: "Safety Training",
+    channel: "email",
+    status: "skip",
+    reason: "status changed",
+  },
+];
+
 export const deliveryBreakdown = [
   {
     channel: "Email",
@@ -87,3 +118,26 @@ export const engagementMetrics = {
   completionRate: 33,
   responseRate: 27,
 };
+
+export const mockOverview = [
+  {
+    label: "Total sent",
+    value: overviewStats.totalSent,
+    delta: overviewStats.weeklyGrowth,
+  },
+  {
+    label: "Sent this week",
+    value: overviewStats.sentThisWeek,
+    delta: overviewStats.weeklyGrowth,
+  },
+  {
+    label: "Active rules",
+    value: overviewStats.activeRules,
+    delta: 0,
+  },
+  {
+    label: "Reengaged",
+    value: overviewStats.reengagedLearners,
+    delta: 12,
+  },
+];

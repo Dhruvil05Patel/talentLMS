@@ -87,7 +87,7 @@ export const solutionsData = {
   ],
   aiSolution: [
     { label: "AI Progress Summarizer", url: "/ai-progress-summarizer" },
-    { label: "NudgeBot", url: "/nudgebot" },
+    { label: "NudgeBot", url: "/solutions/ai-solutions/nudge-bot" },
   ],
 };
 

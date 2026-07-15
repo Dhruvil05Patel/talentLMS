@@ -3,7 +3,12 @@
 import Link from "next/link";
 import { productsData } from "./navData";
 
-export default function DropdownProducts({ onMouseEnter, onMouseLeave }) {
+type DropdownProps = {
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+};
+
+export default function DropdownProducts({ onMouseEnter, onMouseLeave }: DropdownProps) {
   return (
     <div
       className="absolute top-full left-0 mt-2 w-[420px] bg-white rounded-2xl shadow-xl border border-gray-100 p-4 z-50 flex flex-col space-y-1"

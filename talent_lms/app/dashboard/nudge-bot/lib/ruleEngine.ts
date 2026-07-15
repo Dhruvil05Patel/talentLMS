@@ -1,4 +1,4 @@
-import { Learner } from "../../ai-summarizer/types/summarizer";
+import { Learner } from "../../../ai-progress-summarizer/types/summarizer";
 import {
   DryRunResult,
   NudgeRule,

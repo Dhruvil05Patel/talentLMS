@@ -11,11 +11,11 @@ export default function EmptyState() {
       />
 
       <h2 className="text-2xl font-semibold text-gray-800">
-        No Learners Found
+        No learners found
       </h2>
 
-      <p className="mt-3 text-gray-500">
-        Try changing your search or filter criteria.
+      <p className="mx-auto mt-3 max-w-md text-gray-500">
+        Try changing your search or filters. If this employer has no assigned learners yet, add learners in Supabase and make sure their `employer_id` matches this account.
       </p>
     </div>
   );

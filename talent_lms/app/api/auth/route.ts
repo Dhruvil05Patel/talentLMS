@@ -23,6 +23,10 @@ const updateNameSchema = z.object({
   name: z.string().min(1),
 });
 
+const resetPasswordSchema = z.object({
+  email: z.string().email(),
+});
+
 type AccountType = z.infer<typeof accountTypeSchema>;
 
 async function deleteAuthUser(userId?: string) {
@@ -45,6 +49,27 @@ export async function POST(request: NextRequest) {
   const url = new URL(request.url);
   const action = url.searchParams.get("action") || "login";
   const body = await request.json();
+
+  if (action === "reset-password") {
+    const parsed = resetPasswordSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Validation failed", details: parsed.error.issues },
+        { status: 400 }
+      );
+    }
+
+    const redirectTo = new URL("/login", request.url).toString();
+    const { error } = await supabaseAnon.auth.resetPasswordForEmail(parsed.data.email, {
+      redirectTo,
+    });
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    return NextResponse.json({ success: true });
+  }
 
   if (action === "signup") {
     const parsed = signupSchema.safeParse(body);

@@ -11,6 +11,7 @@ interface Props {
   status:
     | "sent"
     | "failed"
+    | "pending"
     | "queued"
     | "skipped"
     | "active"
@@ -40,6 +41,7 @@ export default function StatusBadge({
       );
 
     case "queued":
+    case "pending":
       return (
         <Badge
           color="blue"

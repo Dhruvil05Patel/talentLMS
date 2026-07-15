@@ -1,12 +1,5 @@
 "use client";
 
-import {
-  BarChart3,
-  Bot,
-  History,
-  Settings,
-} from "lucide-react";
-
 export type NudgeTab =
   | "overview"
   | "rules"
@@ -26,22 +19,18 @@ const tabs = [
   {
     id: "overview",
     label: "Overview",
-    icon: BarChart3,
   },
   {
     id: "rules",
     label: "Rules",
-    icon: Bot,
   },
   {
     id: "history",
     label: "History",
-    icon: History,
   },
   {
     id: "settings",
     label: "Settings",
-    icon: Settings,
   },
 ] as const;
 
@@ -69,11 +58,9 @@ export default function TabNavigation({
   };
 
   return (
-    <div className="mb-8 overflow-x-auto">
-      <div className="inline-flex min-w-full rounded-2xl border border-gray-200 bg-white p-2 shadow-sm">
+    <div className="overflow-x-auto border-b border-[#EDE8DE]">
+      <div className="inline-flex min-w-full gap-6">
         {tabs.map((tab) => {
-          const Icon = tab.icon;
-
           const active =
             activeTab === tab.id;
 
@@ -85,22 +72,20 @@ export default function TabNavigation({
               onClick={() =>
                 onChange(tab.id)
               }
-              className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-medium transition-all ${
+              className={`flex min-w-fit items-center justify-center gap-2 border-b-2 px-1 py-3 text-sm font-semibold transition ${
                 active
-                  ? "bg-blue-600 text-white shadow"
-                  : "text-gray-600 hover:bg-gray-100"
+                  ? "border-[#F96A1E] text-[#1A2B5B]"
+                  : "border-transparent text-[#9AA0B5] hover:text-[#5C6680]"
               }`}
             >
-              <Icon size={18} />
-
               {tab.label}
 
               {badge !== undefined && (
                 <span
                   className={`rounded-full px-2 py-0.5 text-xs ${
                     active
-                      ? "bg-white/20 text-white"
-                      : "bg-gray-200 text-gray-700"
+                      ? "bg-[#FFF3EC] text-[#F96A1E]"
+                      : "bg-[#F4F0E8] text-[#9AA0B5]"
                   }`}
                 >
                   {badge}

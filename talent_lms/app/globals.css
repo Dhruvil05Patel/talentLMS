@@ -17,6 +17,11 @@
   font-display: swap;
 }
 
+:root {
+  --font-jakarta: 'Hornbill';
+  --font-body: 'Axiforma';
+}
+
 *,
 *::before,
 *::after {

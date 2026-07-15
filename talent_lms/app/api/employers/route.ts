@@ -17,11 +17,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // For now, return all employers (in a real app, you'd filter by employerId or check permissions)
-  const { data, error } = await supabase.from("employers").select("*");
+  const { data, error } = await supabase
+    .from("employers")
+    .select("*")
+    .eq("id", employerId)
+    .single();
   timer.end();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ employers: data });
+  return NextResponse.json({ employer: data });
 }
 
 export async function POST(request: NextRequest) {
@@ -45,11 +48,12 @@ export async function POST(request: NextRequest) {
 
   const { data, error } = await supabase
     .from("employers")
-    .insert(parsed.data)
+    .update(parsed.data)
+    .eq("id", employerId)
     .select("*")
     .single();
 
   timer.end();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ employer: data }, { status: 201 });
+  return NextResponse.json({ employer: data });
 }

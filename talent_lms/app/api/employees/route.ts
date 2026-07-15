@@ -82,22 +82,20 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const tokenEmployerId = await employerIdFromToken(token);
-  if (!tokenEmployerId) {
+  const employer_id = await employerIdFromToken(token);
+  if (!employer_id) {
     return NextResponse.json({ error: "Invalid token: missing employer_id" }, { status: 401 });
   }
 
   const url = new URL(request.url);
-  const learner_id = url.searchParams.get("user_id");
-  if (!learner_id) {
+  const user_id = url.searchParams.get("user_id");
+  if (!user_id) {
     return NextResponse.json({ error: "learner_id required" }, { status: 400 });
   }
 
   const body = await request.json();
-  const { user_id, ...rest } = body;
-  if (!user_id) {
-    return NextResponse.json({ error: "user_id required" }, { status: 400 });
-  }
+  const { user_id: ignoredUserId, ...rest } = body;
+  void ignoredUserId;
 
   const parsed = employeeSchema.partial().safeParse(rest);
   if (!parsed.success) {
@@ -111,6 +109,7 @@ export async function PUT(request: NextRequest) {
     .from("learners")
     .update(parsed.data)
     .eq("user_id", parseInt(user_id))
+    .eq("employer_id", employer_id)
     .select("*")
     .single();
 
@@ -124,8 +123,8 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const tokenEmployerId = await employerIdFromToken(token);
-  if (!tokenEmployerId) {
+  const employer_id = await employerIdFromToken(token);
+  if (!employer_id) {
     return NextResponse.json({ error: "Invalid token: missing employer_id" }, { status: 401 });
   }
 
@@ -138,7 +137,8 @@ export async function DELETE(request: NextRequest) {
   const { error } = await supabase
     .from("learners")
     .delete()
-    .eq("user_id", parseInt(learner_id));
+    .eq("user_id", parseInt(learner_id))
+    .eq("employer_id", employer_id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ success: true });

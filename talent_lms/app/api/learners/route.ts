@@ -72,13 +72,13 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (parsed.data.employer_id !== employer_id) {
+  if (parsed.data.employer_id !== undefined && parsed.data.employer_id !== employer_id) {
     return NextResponse.json({ error: "Forbidden: employer_id mismatch" }, { status: 403 });
   }
 
   const { data, error } = await supabase
     .from("learners")
-    .insert(parsed.data)
+    .insert({ ...parsed.data, employer_id })
     .select("*")
     .single();
 
@@ -119,6 +119,7 @@ export async function PUT(request: NextRequest) {
     .from("learners")
     .update(parsed.data)
     .eq("user_id", parseInt(user_id))
+    .eq("employer_id", employer_id)
     .select("*")
     .single();
 
@@ -146,7 +147,8 @@ export async function DELETE(request: NextRequest) {
   const { error } = await supabase
     .from("learners")
     .delete()
-    .eq("user_id", parseInt(learner_id));
+    .eq("user_id", parseInt(learner_id))
+    .eq("employer_id", employer_id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ success: true });

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
-  Play,
   ChevronDown,
   Eye,
   Zap,
@@ -62,10 +61,8 @@ export default function RunNowButton({
         onClick={() =>
           setOpen(!open)
         }
-        className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-medium text-white shadow transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex items-center gap-2 rounded-full bg-[#1A5438] px-6 py-3 font-[var(--font-jakarta)] text-sm font-bold text-white shadow-sm transition hover:bg-[#123d29] disabled:cursor-not-allowed disabled:opacity-60"
       >
-        <Play size={17} />
-
         {loading
           ? "Running..."
           : "Run Now"}
@@ -76,26 +73,26 @@ export default function RunNowButton({
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-3 w-72 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
+        <div className="absolute right-0 z-30 mt-3 w-72 overflow-hidden rounded-xl border border-[#EDE8DE] bg-white shadow-xl">
           <button
             onClick={() => {
               setOpen(false);
 
               onRunAll();
             }}
-            className="flex w-full items-start gap-3 px-5 py-4 text-left transition hover:bg-gray-50"
+            className="flex w-full items-start gap-3 px-5 py-4 text-left transition hover:bg-[#FAF8F3]"
           >
             <Zap
               size={18}
-              className="mt-1 text-blue-600"
+              className="mt-1 text-[#F96A1E]"
             />
 
             <div>
-              <p className="font-medium">
+              <p className="font-[var(--font-jakarta)] text-sm font-bold text-[#1A2B5B]">
                 Run All Active Rules
               </p>
 
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-xs leading-5 text-[#5C6680]">
                 Evaluate every enabled
                 rule and immediately
                 send nudges.
@@ -103,7 +100,7 @@ export default function RunNowButton({
             </div>
           </button>
 
-          <div className="border-t" />
+          <div className="border-t border-[#EDE8DE]" />
 
           <button
             onClick={() => {
@@ -111,19 +108,19 @@ export default function RunNowButton({
 
               onDryRun();
             }}
-            className="flex w-full items-start gap-3 px-5 py-4 text-left transition hover:bg-gray-50"
+            className="flex w-full items-start gap-3 px-5 py-4 text-left transition hover:bg-[#FAF8F3]"
           >
             <Eye
               size={18}
-              className="mt-1 text-emerald-600"
+              className="mt-1 text-[#1A5438]"
             />
 
             <div>
-              <p className="font-medium">
-                Preview Only
+              <p className="font-[var(--font-jakarta)] text-sm font-bold text-[#1A2B5B]">
+                Preview Only (Dry Run)
               </p>
 
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-xs leading-5 text-[#5C6680]">
                 Show learners that
                 qualify without sending
                 any nudges.

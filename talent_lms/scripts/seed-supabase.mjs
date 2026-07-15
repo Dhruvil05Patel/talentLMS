@@ -1,5 +1,5 @@
 // scripts/seed-supabase.mjs
-// Populates Supabase (employers + learners) directly. No docker, no Postgres in repo.
+// Populates learners for an existing Supabase employer. No docker, no Postgres in repo.
 // Run: npm run seed
 import { createClient } from "@supabase/supabase-js";
 import { readFileSync } from "node:fs";
@@ -23,6 +23,8 @@ loadEnv();
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const seedEmployerId = process.env.SEED_EMPLOYER_ID;
+const seedEmployerEmail = process.env.SEED_EMPLOYER_EMAIL;
 
 if (!url || !key) {
   console.error(
@@ -81,19 +83,43 @@ function riskFor(completion, inactiveDays, quiz) {
   return "on-track";
 }
 
-async function main() {
-  // 1) employer (idempotent by domain)
-  const { data: emp, error: empErr } = await supabase
+async function getExistingEmployer() {
+  let query = supabase
     .from("employers")
-    .upsert(
-      { name: "Acme Corporation", domain: "acme.example.com" },
-      { onConflict: "domain" }
-    )
-    .select("id")
-    .single();
-  if (empErr) throw empErr;
+    .select("id, name, email, domain")
+    .limit(1);
+
+  if (seedEmployerId) {
+    query = query.eq("id", Number(seedEmployerId));
+  } else if (seedEmployerEmail) {
+    query = query.eq("email", seedEmployerEmail);
+  } else {
+    query = query.order("id", { ascending: true });
+  }
+
+  const { data, error } = await query.maybeSingle();
+  if (error) throw error;
+
+  if (!data) {
+    throw new Error(
+      "No employer found in Supabase. Set SEED_EMPLOYER_ID or SEED_EMPLOYER_EMAIL to an existing employers row."
+    );
+  }
+
+  return data;
+}
+
+async function main() {
+  // 1) employer from real Supabase data
+  const emp = await getExistingEmployer();
   const employerId = emp.id;
-  console.log(`Employer ready (id=${employerId}).`);
+  const employerDomain = emp.domain || emp.email?.split("@")[1];
+  if (!employerDomain) {
+    throw new Error(
+      `Employer ${employerId} must have a domain or email before learners can be seeded.`
+    );
+  }
+  console.log(`Using existing employer "${emp.name}" (id=${employerId}).`);
 
   // 2) learners (idempotent by user_id)
   const rows = [];
@@ -107,7 +133,7 @@ async function main() {
     rows.push({
       user_id: 1000 + i,
       name,
-      email: `${first}.${last}${i}@acme.example.com`,
+      email: `${first}.${last}${i}@${employerDomain}`,
       avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(
         name
       )}&background=2563eb&color=fff`,

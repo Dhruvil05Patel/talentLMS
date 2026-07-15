@@ -1,127 +1,121 @@
-# Remaining Plan
+# Remaining Plan — Nudge Bot
 
-## Done So Far
+## What’s already implemented (from code + existing docs)
 
-### Folder Cleanup
-- Identified `talentLMS/` as the accidental dummy app folder and `talent_lms/` as the real app.
-- Compared overlapping files before removal.
-- Migrated the useful CTA/login signup fixes into `talent_lms/`.
-- Removed the dummy `talentLMS/` folder.
+### Backend (API)
+- ✅ `/api/nudge/rules` (GET, POST)
+- ✅ `/api/nudge/rules/[id]` (PATCH, DELETE)
+- ✅ `/api/nudge/run` (POST) — supports `{ dry_run, rule_ids }`
+- ✅ `/api/nudge/dry-run` (POST)
+- ✅ `/api/nudge/log` (GET, paginated + filters: channel/status/search)
+- ✅ `/api/nudge/preview-message` (POST) — generates message preview (AI or template)
+- ✅ `/api/nudge/portal-notification` (GET) + `/api/nudge/portal-notification/[id]/mark-shown` (POST)
+- ✅ `/api/nudge/overview` (GET) — stats + recent nudges + active rules
+- ✅ `/api/nudge/test-email` (POST) — Resend MVP email test
 
-### Supabase / Database
-- Added Supabase client setup in `lib/supabaseClient.ts` with anon and service-role clients.
-- Added `schema.sql` and `supabase/schema.sql` for employers, employees, and learners.
-- Added `supabase/auth-profile-migration.sql` for existing Supabase projects:
-  - Adds `employers.email`
-  - Adds `employers.auth_user_id`
-  - Adds `learners.auth_user_id`
-  - Adds `idx_learners_auth_user`
-- Added `scripts/seed-supabase.mjs` for demo employer and learner data.
-- Kept employee/learner data in the database as normal business data.
+### Core orchestration
+- ✅ `app/api/nudge/_lib.ts`
+  - fetches `nudge_rules` + `learners` scoped by `employer_id`
+  - evaluates triggers, cooldown, and weekly cap
+  - generates messages via `generateNudgeMessage` (Claude) or templates
+  - delivers via channel adapter (currently includes `in-portal` insert + `sendNudge` for other channels)
+  - logs each outcome into `nudge_log`
 
-### Auth Direction
-- Changed auth direction to employer-only login.
-- Employees/learners are not allowed to log in.
-- Employer accounts are created through Supabase Auth.
-- Employer profile rows are stored in the `employers` table.
-- Learners remain scoped by `employer_id`, so employers can see their assigned learners.
+### Rule evaluation + message generation
+- ✅ Nudge run logic is wired to:
+  - `app/ai-progress-summarizer/lib/nudgeEngine.ts` (trigger + cooldown + weekly cap helpers)
+  - `app/ai-progress-summarizer/lib/nudgeGenerator.ts` (Claude-based nudge text)
 
-### Auth API
-- Implemented `app/api/auth/route.ts`.
-- Added employer signup using Supabase Auth plus `employers` row creation.
-- Added employer login using Supabase Auth.
-- Added account-type guard so non-employer auth is rejected.
-- Added profile name update via `PATCH /api/auth`.
-- Added rollback for failed signup profile creation by deleting the newly created Supabase Auth user.
+### Supabase schema + RLS
+- ✅ `talent_lms/supabase/nudge-schema.sql`
+  - `nudge_rules`
+  - `nudge_log`
+  - `portal_notifications`
+  - RLS policies for all three tables
 
-### Auth Client
-- Implemented `lib/auth.ts`:
-  - `signIn`
-  - `signUp`
-  - `signOut`
-  - `getSession`
-  - `isAuthenticated`
-  - stored-user updates
-  - persisted profile name update
-- Implemented `lib/serverAuth.ts` to verify Supabase access tokens with `supabase.auth.getUser`.
-- Updated `components/AuthProvider.tsx`.
-- Memoized auth context functions/value to avoid repeated render/session-load loops that can slow the browser.
+### Frontend (dashboard UI)
+- ✅ `/dashboard/nudge-bot` route exists and renders a 4-tab UI:
+  - Overview tab
+  - Rules tab
+  - History tab
+  - Settings tab
+- ✅ Drawer UI exists for rule preview and “Regenerate preview”
+- ✅ Dry run panel exists and calls `/api/nudge/dry-run` on confirm
 
-### Login / Signup UI
-- Wired `app/login/page.tsx` to real employer sign-in.
-- Removed employee sign-in option.
-- Wired `app/login/signup/page.tsx` to real employer signup.
-- Removed employee signup option.
-- Signup now handles both immediate Supabase sessions and email-confirmation-required flows.
+## What still remains
 
-### Navbar / Session UI
-- Updated `app/components/layout/navbar/CTAButtons.tsx`.
-- When signed out, navbar shows Login, Request a demo, and Sign up.
-- When signed in, navbar shows a default profile circle instead of signup CTAs.
-- Profile menu includes:
-  - Dashboard
-  - Change Name
-  - Logout
+### A) Fix/finish Supabase integration on the frontend
 
-### AI Summarizer
-- Added Supabase-backed learner API integration under `app/ai-progress-summarizer/lib/`.
-- Removed older mock/fake learner data files from the active flow.
-- Added auth guarding to the summarizer page so unauthenticated users are sent to `/login`.
-- Learner fetches use the stored Supabase access token.
+**What we have now (verified from code):**
+- The dashboard route + tabs exist and render.
+- The client calls real backend endpoints for:
+  - fetching rules (`/api/nudge/rules`) and history (`/api/nudge/log`)
+  - running nudges (`/api/nudge/run`) and dry-run (`/api/nudge/dry-run`)
+  - generating previews (`/api/nudge/preview-message`)
+  - sending test email (`/api/nudge/test-email`) (API route exists)
 
-### NudgeBot
-- Temporarily disabled `/dashboard/nudge-bot`.
-- Replaced the broken dashboard import path with a placeholder page.
-- This avoids the build error from missing/renamed mock exports like `mockOverview`.
+**What is still incomplete / risky:**
+- `NudgeBotDashboardClient.tsx` still keeps mock data as initial state and fallback behavior.
+- `RuleDrawer.tsx` is currently mostly *display-only* (no editable inputs wired to save/update endpoints).
+- `RulesTab.tsx` lists rules but does not provide enable/disable or CRUD actions.
+- `SettingsTab` appears to be using `mockSettings` instead of persisted configuration.
 
-## Left To Do
+Remaining tasks:
+- [x] Remove/limit mock fallback behavior so UI reflects true backend state.
+- [ ] Implement full CRUD + enable/disable in the UI:
 
-### Database
-- Run `supabase/auth-profile-migration.sql` once in the live Supabase SQL editor.
-- Confirm existing `employers` rows have `email` values where needed for login.
-- Decide whether old `employees` table is still needed or whether `learners` is the single employee-data table.
-- Update seed script if demo data should include auth-linked employer users, not only profile rows.
+  - create rule (`POST /api/nudge/rules`)
+  - edit rule fields (`PATCH /api/nudge/rules/[id]`)
+  - enable/disable (`PATCH` updating `enabled`)
+  - delete rule (`DELETE /api/nudge/rules/[id]`)
+- [ ] Make `RuleDrawer` editable and wire Save/Delete to the real API.
+- [ ] Wire `SettingsTab` to real persisted settings (or clearly remove settings persistence if not implemented) and ensure "Send Test Email" hits `/api/nudge/test-email`.
 
-### Auth
-- Confirm Supabase email confirmation setting and test both flows:
-  - Signup returns a session immediately.
-  - Signup requires email confirmation and user signs in later.
-- Add server-side route protection for dashboard/summarizer pages if needed.
-- Add password reset flow for `/forgot-password`.
-- Add a proper profile settings modal/page instead of `window.prompt` for Change Name.
 
-### Employer Dashboard
-- Decide final employer landing page after login.
-- Current profile Dashboard link goes to `/ai-progress-summarizer`.
-- NudgeBot is disabled until its types/data modules are fixed.
-- Re-enable NudgeBot after fixing broken exports/types.
+### B) Ensure “Run Now” and dry-run delivery logic are fully correct
+- [ ] Verify `sendNudge` channel adapter behavior matches the intended channel set.
+  - If Slack/WhatsApp are unsupported, ensure those channels degrade gracefully (or are hidden/disabled in UI).
+- [ ] Confirm message generation inputs are correct (first name extraction, completion percentage field mapping, deadline label logic).
+- [ ] Confirm portal channel behavior:
+  - `portal_notifications` inserts are correct
+  - client side widget marks notifications shown correctly.
 
-### AI Summarizer
-- Verify employers only see learners with their own `employer_id`.
-- Add loading/error empty states for missing learner assignments.
-- Validate summary generation update routes with Supabase auth.
-- Replace remaining mock-only assumptions with DB-backed data where needed.
+### C) Scheduler wiring
+- [ ] Confirm `talent_lms/supabase/nudge-cron.sql` is applied and points to the correct deployed URL.
+- [ ] Confirm cron secret verification is implemented end-to-end (route + cron config).
+- [ ] Validate cron triggers:
+  - correct timing
+  - respects enabled rules
+  - doesn’t send duplicate nudges within cooldown.
 
-### Build / Type Health
-- Fix existing project-wide TypeScript errors in:
-  - navbar dropdown props/types
-  - NudgeBot type exports
-  - empty or non-module pages
-  - missing UI components such as `@/components/ui/switch`
-- Run full `npm run lint`.
-- Run full `npx tsc --noEmit`.
-- Run `npm run build`.
+### D) Data correctness checks / guardrails
+- [ ] Add/verify “max nudges per learner per week” matches business requirement.
+  - Backend currently uses `WEEKLY_CAP = 3` and a simple ISO week start.
+- [ ] Add/verify risk status mapping consistency:
+  - backend logs `risk_status_at_send` using `learner.risk_status ?? learner.risk ?? 'no-data'`.
+- [ ] Consider pagination performance on the run evaluator:
+  - backend currently fetches all learners in a single query; add batching if needed.
 
-### Cleanup
-- Remove `dummy-creds.txt` before committing if it is not needed.
-- Keep `AGENTS.md`, `CLAUDE.md`, `.claude/`, `.opencode/`, `.cursor/`, `.windsurf/`, `.clinerules/`, and `.github/copilot-instructions.md` out of commits unless the team explicitly wants them.
-- Review package changes and confirm all added dependencies are intentional.
+### E) UI polish
+- [ ] Improve History actions:
+  - “Retry” behavior should map to a backend re-queue mechanism (currently the backend logs outcomes but may not have a dedicated retry endpoint).
+- [ ] Add “Run Now” dropdown options to match design:
+  - Run all active rules
+  - Preview Only (dry run)
+- [ ] Ensure empty states match design spec.
 
-## Suggested Next Actions
+### F) Documentation updates
+- [ ] Update `talent_lms/docs/execution plan.md` to reflect which phases are completed vs remaining.
+- [ ] Update `talent_lms/docs/NUDGE-BOT-PLAN.md` to mark completed checklist items (optional but recommended).
 
-1. Run `supabase/auth-profile-migration.sql` in Supabase.
-2. Create or update one employer row with an email and sign up through the app.
-3. Verify employer login lands on `/ai-progress-summarizer`.
-4. Confirm only learners for that employer are returned.
-5. Fix the remaining build/type errors unrelated to auth.
-6. Re-enable NudgeBot after its data/type files are repaired.
+## Quick status by original plan phase
+- N1 (Schema): ✅ done (table + RLS present)
+- N2 (Rule engine): ✅ wired (passesTrigger + cooldown + weekly cap in use)
+- N3 (Claude generator): ✅ wired
+- N4 (Email MVP): ✅ wired via `/api/nudge/test-email` + `sendEmail`
+- N5 (API routes): ✅ most routes present
+- N6/N7 (Frontend tabs): ⚠ partial (UI exists; editing/persistence and some settings/history actions likely incomplete)
+- N8 (Scheduler): ⏳ verify cron deployment + secret verification
+- N9 (Slack adapter): ⏳ confirm adapter exists; if not, keep optional/disabled
+
+

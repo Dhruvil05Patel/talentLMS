@@ -21,6 +21,7 @@ type AuthResponse = {
 function persistAuth(data: AuthResponse) {
   if (data.session?.access_token) {
     localStorage.setItem(AUTH_TOKEN_KEY, data.session.access_token);
+    document.cookie = `${AUTH_TOKEN_KEY}=${data.session.access_token}; path=/; max-age=604800; SameSite=Lax`;
   }
   localStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
 }
@@ -88,9 +89,25 @@ export const updateAccountName = async (name: string) => {
   return data.user;
 };
 
+export const requestPasswordReset = async (email: string) => {
+  const res = await fetch("/api/auth?action=reset-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data?.error || "Failed to send reset email.");
+  }
+
+  return data;
+};
+
 export const signOut = () => {
   localStorage.removeItem(AUTH_TOKEN_KEY);
   localStorage.removeItem(AUTH_USER_KEY);
+  document.cookie = `${AUTH_TOKEN_KEY}=; path=/; max-age=0; SameSite=Lax`;
 };
 
 export const getSession = async () => {

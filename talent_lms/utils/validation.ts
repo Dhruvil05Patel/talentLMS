@@ -18,7 +18,7 @@ export const learnerSchema = z.object({
   risk_status: z.enum(["on-track", "at-risk", "overdue", "no-data"]).optional(),
   summary: z.string().nullable().optional(),
   summary_generated_at: z.string().datetime().nullable().optional(),
-  employer_id: z.number().int()
+  employer_id: z.number().int().optional()
 });
 
 export const getLearnersSchema = z.object({

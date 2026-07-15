@@ -3,7 +3,12 @@
 import Link from "next/link";
 import { platformData } from "./navData";
 
-export default function DropdownPlatform({ onMouseEnter, onMouseLeave }) {
+type DropdownProps = {
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+};
+
+export default function DropdownPlatform({ onMouseEnter, onMouseLeave }: DropdownProps) {
   return (
     <div
       className="absolute top-full left-1/2 -translate-x-1/3 mt-2 w-[760px] bg-white rounded-2xl shadow-xl border border-gray-100 p-6 z-50 grid grid-cols-12 gap-8"

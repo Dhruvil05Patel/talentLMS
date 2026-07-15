@@ -20,26 +20,28 @@ function defaultAvatar(name: string): string {
   )}&background=2563eb&color=fff`;
 }
 
-export function dbRowToLearner(row: Record<string, any>): Learner {
+type LearnerRow = Record<string, string | number | null | undefined>;
+
+export function dbRowToLearner(row: LearnerRow): Learner {
   return {
-    id: row.user_id,
-    name: row.name ?? "",
-    email: row.email ?? "",
-    avatar: row.avatar_url ?? defaultAvatar(row.name ?? "Learner"),
-    courseId: row.course_id ?? 0,
-    courseName: row.course_name ?? "",
+    id: Number(row.user_id ?? 0),
+    name: String(row.name ?? ""),
+    email: String(row.email ?? ""),
+    avatar: String(row.avatar_url ?? defaultAvatar(String(row.name ?? "Learner"))),
+    courseId: Number(row.course_id ?? 0),
+    courseName: String(row.course_name ?? ""),
     groupId: 0,
-    groupName: row.group_name ?? "",
-    enrolledOn: row.enrolled_at ?? "",
-    deadline: row.deadline ?? "",
-    completion: row.completion_pct ?? 0,
-    quizAverage: row.quiz_avg_pct ?? 0,
-    timeSpent: row.time_spent_mins ?? 0,
-    certificatesEarned: row.certificates_earned ?? 0,
-    lastActive: row.last_active ?? "",
-    inactiveDays: parseInactiveDays(row.last_active),
+    groupName: String(row.group_name ?? ""),
+    enrolledOn: String(row.enrolled_at ?? ""),
+    deadline: String(row.deadline ?? ""),
+    completion: Number(row.completion_pct ?? 0),
+    quizAverage: Number(row.quiz_avg_pct ?? 0),
+    timeSpent: Number(row.time_spent_mins ?? 0),
+    certificatesEarned: Number(row.certificates_earned ?? 0),
+    lastActive: String(row.last_active ?? ""),
+    inactiveDays: parseInactiveDays(String(row.last_active ?? "")),
     risk: coerceRisk(row.risk_status),
-    summary: row.summary ?? "",
+    summary: String(row.summary ?? ""),
   };
 }
 

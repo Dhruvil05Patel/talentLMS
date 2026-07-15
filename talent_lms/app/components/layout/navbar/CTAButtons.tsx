@@ -1,23 +1,47 @@
 'use client';
 
 import Link from "next/link";
+import { FormEvent } from "react";
 import { useContext, useState } from "react";
-import { LayoutDashboard, LogOut, UserRoundPen } from "lucide-react";
+import { LayoutDashboard, LogOut, UserRoundPen, X } from "lucide-react";
 import { AuthContext } from "@/components/AuthProvider";
 
 export default function CTAButtons() {
   const { user, isAuthenticated, changeName, signOut } = useContext(AuthContext);
   const [open, setOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [name, setName] = useState(user?.name || "");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const displayName = user?.name || user?.email || "Profile";
   const initial = displayName.trim().charAt(0).toUpperCase() || "U";
 
-  const handleChangeName = async () => {
-    const nextName = window.prompt("Change name", user?.name || "");
-    if (nextName?.trim()) {
-      await changeName(nextName);
-    }
+  const openSettings = () => {
+    setName(user?.name || "");
+    setError(null);
+    setSettingsOpen(true);
     setOpen(false);
+  };
+
+  const handleChangeName = async (event: FormEvent) => {
+    event.preventDefault();
+    const nextName = name.trim();
+    if (!nextName) {
+      setError("Name is required.");
+      return;
+    }
+
+    setSaving(true);
+    setError(null);
+    try {
+      await changeName(nextName);
+      setSettingsOpen(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save name.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleLogout = () => {
@@ -27,6 +51,7 @@ export default function CTAButtons() {
 
   if (isAuthenticated) {
     return (
+      <>
       <div className="relative hidden lg:flex items-center shrink-0 ml-auto">
         <button
           type="button"
@@ -63,7 +88,7 @@ export default function CTAButtons() {
 
             <button
               type="button"
-              onClick={handleChangeName}
+              onClick={openSettings}
               className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium text-gray-800 hover:bg-gray-50"
             >
               <UserRoundPen size={17} />
@@ -81,6 +106,61 @@ export default function CTAButtons() {
           </div>
         ) : null}
       </div>
+      {settingsOpen ? (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-2xl">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">Profile Settings</h2>
+              <button
+                type="button"
+                onClick={() => setSettingsOpen(false)}
+                className="rounded-full p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                aria-label="Close profile settings"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {error ? (
+              <div className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+                {error}
+              </div>
+            ) : null}
+
+            <form onSubmit={handleChangeName} className="mt-5 space-y-4">
+              <div>
+                <label htmlFor="profile-name" className="mb-2 block text-sm font-medium text-gray-800">
+                  Name
+                </label>
+                <input
+                  id="profile-name"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-[#007a55] focus:ring-2 focus:ring-[#007a55]/20"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setSettingsOpen(false)}
+                  className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="rounded-lg bg-[#007a55] px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {saving ? "Saving..." : "Save"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
+      </>
     );
   }
 
