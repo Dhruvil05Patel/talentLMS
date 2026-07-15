@@ -1,4 +1,8 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+TalentLMS — Next.js (App Router) project.
+
+This repo contains two main product areas we implemented:
+- **Progress Summarizer** (`/ai-progress-summarizer`): Supabase-backed learner progress + AI summary generation.
+- **Nudge Bot** (`/dashboard/nudge-bot`): rule-based re-engagement orchestration (Supabase + AI message generation + delivery/logging + dry-run).
 
 ## Getting Started
 
@@ -18,7 +22,28 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## What we built (high level)
+
+### 1) Progress Summarizer (`/ai-progress-summarizer`)
+- Supabase-backed learner fetch + filtering.
+- Persists AI-generated progress summaries into the `learners` table via `/api/summaries`.
+- Employer-only login; learner reads/updates are scoped by `employer_id`.
+
+### 2) Nudge Bot (`/dashboard/nudge-bot`)
+- Four-tab dashboard (Overview / Rules / History / Settings).
+- Rule management + orchestration via Next.js API routes under `app/api/nudge/*`.
+- Dry-run support, message preview, and execution logging.
+- Supabase schema + RLS for:
+  - `nudge_rules`
+  - `nudge_log`
+  - `portal_notifications`
+
+## Configuration & environment
+
+This project expects Supabase + AI/email providers to be configured via env vars (see `.env.example` in `talent_lms/`). Common areas:
+- Supabase URL/keys used by the app (`NEXT_PUBLIC_SUPABASE_*`, `SUPABASE_SERVICE_ROLE_KEY`)
+- Summarizer generation (Anthropic / Claude API key)
+- Nudge delivery MVP (Resend API key/from email)
 
 ## Learn More
 
