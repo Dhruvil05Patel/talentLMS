@@ -60,7 +60,7 @@ export default function DropdownCustomers({ onMouseEnter, onMouseLeave }: Dropdo
             {/* Network Bubble Logo Graphic Container */}
             <div className="relative w-full h-40 bg-white border border-gray-100 rounded-xl overflow-hidden mb-4 flex items-center justify-center p-2 shadow-inner">
               <img
-                src="/images/customer-network-cloud.png" // Replace with your cloud bubble brand graphic asset
+                src="/images/navbar/customers/customers-menu-768x471.webp" // Replace with your cloud bubble brand graphic asset
                 alt="Trusted by Global Teams"
                 className="max-w-full max-h-full object-contain"
               />

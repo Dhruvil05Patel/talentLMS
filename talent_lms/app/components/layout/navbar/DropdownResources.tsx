@@ -9,9 +9,6 @@ type DropdownProps = {
 };
 
 export default function DropdownResources({ onMouseEnter, onMouseLeave }: DropdownProps) {
-  // Fallback icon map based on the order of your items in navData.ts
-  const fallbackIcons = ["📝", "💻", "🎙️", "📚", "🔍", "❓", "📊"];
-
   // Helper function to dynamically style the badges to match the reference image
   const getBadgeStyles = (badge: string) => {
     if (badge.toLowerCase().includes("episode")) {
@@ -25,26 +22,30 @@ export default function DropdownResources({ onMouseEnter, onMouseLeave }: Dropdo
 
   return (
     <div
-      className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[740px] bg-white rounded-2xl shadow-xl border border-gray-100 p-6 z-50 grid grid-cols-12 gap-6"
+      className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-185 bg-white rounded-2xl shadow-xl border border-gray-100 p-6 z-50 grid grid-cols-12 gap-6"
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
       {/* LEFT COLUMN: Resources Navigation Links (Grid span 6) */}
       <div className="col-span-6 flex flex-col justify-center space-y-1">
-        {resourcesData.map((item, index) => (
+        {resourcesData.map((item) => (
           <Link
             key={item.label}
             href={item.url}
             className="flex items-center gap-4 p-2 rounded-xl hover:bg-gray-50 transition-colors duration-200 group"
           >
-            {/* Rounded Icon Ring Container */}
             <div className="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-100 bg-white shadow-sm shrink-0 group-hover:border-gray-200">
-              <span className="text-base text-gray-500">
-                {fallbackIcons[index % fallbackIcons.length]}
-              </span>
+              {item.icon?.startsWith("/") || item.icon?.startsWith("http") ? (
+                <img
+                  src={item.icon}
+                  alt={`${item.label} icon`}
+                  className="w-5 h-5 object-contain"
+                />
+              ) : (
+                <span className="text-base text-gray-500">{item.icon ?? "•"}</span>
+              )}
             </div>
 
-            {/* Label and Inline Badges */}
             <div className="flex items-center gap-2">
               <span className="text-[14px] font-bold text-gray-800 group-hover:text-black transition-colors">
                 {item.label}
@@ -67,7 +68,7 @@ export default function DropdownResources({ onMouseEnter, onMouseLeave }: Dropdo
             {/* Podcast Cover Graphic Asset */}
             <div className="relative w-full h-40 bg-[#FF9E1B] rounded-xl overflow-hidden mb-4 flex items-center justify-center p-3 shadow-inner">
               <img
-                src="/images/podcast-talent-talks.png" // Replace with your actual podcast graphic asset path
+                src="/images/navbar/resources/resources.webp" // Replace with your actual podcast graphic asset path
                 alt="Talent Talks Podcast Banner"
                 className="max-w-full max-h-full object-contain rounded-lg shadow-md"
               />

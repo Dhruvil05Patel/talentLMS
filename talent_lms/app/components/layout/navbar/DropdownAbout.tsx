@@ -11,7 +11,7 @@ type DropdownProps = {
 export default function DropdownAbout({ onMouseEnter, onMouseLeave }: DropdownProps) {
   return (
     <div
-      className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[700px] bg-white rounded-2xl shadow-xl border border-gray-100 p-6 z-50 grid grid-cols-12 gap-6"
+      className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-175 bg-white rounded-2xl shadow-xl border border-gray-100 p-6 z-50 grid grid-cols-12 gap-6"
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
@@ -23,12 +23,17 @@ export default function DropdownAbout({ onMouseEnter, onMouseLeave }: DropdownPr
             href={item.url}
             className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors duration-200 group"
           >
-            {/* Icon Wrapper */}
             <div className="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-100 bg-white shadow-sm group-hover:border-gray-200">
-              <span className="text-gray-400 text-xs">--</span>
+              {item.icon?.startsWith("/") || item.icon?.startsWith("http") ? (
+                <img
+                  src={item.icon}
+                  alt={`${item.label} icon`}
+                  className="w-5 h-5 object-contain"
+                />
+              ) : (
+                <span className="text-gray-400 text-base">{item.icon ?? "•"}</span>
+              )}
             </div>
-            
-            {/* Label */}
             <span className="text-[15px] font-medium text-gray-800 group-hover:text-black">
               {item.label}
             </span>
@@ -43,7 +48,7 @@ export default function DropdownAbout({ onMouseEnter, onMouseLeave }: DropdownPr
             {/* Featured Image */}
             <div className="relative w-full h-36 rounded-xl overflow-hidden mb-4">
               <img
-                src="/path-to-your-customer-success-image.jpg" // Replace with your actual image asset path
+                src="/images/navbar/about/aboutus.webp" // Replace with your actual image asset path
                 alt="Customer Success Team"
                 className="w-full h-full object-cover"
               />

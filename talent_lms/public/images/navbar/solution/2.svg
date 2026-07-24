@@ -1,0 +1,8 @@
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-labelledby="by-use-case-icon" role="img">
+  <g id="Frame" fill="none">
+    <path id="Vector" d="M11 6.87502C11 8.64694 9.56356 10.0834 7.79165 10.0834C6.01973 10.0834 4.58331 8.64694 4.58331 6.87502C4.58331 5.1031 6.01973 3.66669 7.79165 3.66669C9.56356 3.66669 11 5.1031 11 6.87502Z" stroke="#212529" stroke-width="1.2px" fill="none"></path>
+    <path id="Vector_2" d="M12.375 10.0834C14.1469 10.0834 15.5833 8.64694 15.5833 6.87502C15.5833 5.1031 14.1469 3.66669 12.375 3.66669" stroke="#212529" stroke-width="1.2px" stroke-linecap="round" fill="none"></path>
+    <path id="Vector_3" d="M12.0476 18.3333H3.53569C2.59549 18.3333 1.83331 17.6298 1.83331 16.7619C1.83331 14.5922 3.73877 12.8333 6.08927 12.8333H9.49399C10.4521 12.8333 11.3363 13.1255 12.0476 13.6187" stroke="#212529" stroke-width="1.2px" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+    <path id="Vector_4" d="M17.4167 12.8333V18.3333M20.1667 15.5833H14.6667" stroke="#212529" stroke-width="1.2px" stroke-linecap="round" fill="none"></path>
+  </g>
+<title id="by-use-case-icon" fill="none">By use case</title></svg>
