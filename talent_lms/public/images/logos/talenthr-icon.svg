@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48" height="48" viewBox="0 0 48 48" aria-hidden="true" role="presentation">
+  <defs>
+    <clipPath id="clip-HR-48x48">
+      <rect width="48" height="48"></rect>
+    </clipPath>
+  </defs>
+  <g id="HR-48x48" clip-path="url(#clip-HR-48x48)">
+    <g id="Group_9556" data-name="Group 9556" transform="translate(0.001 2)">
+      <g id="Group_9555" data-name="Group 9555" transform="translate(0 5)">
+        <g id="HR-64">
+          <path id="Path_1" d="M47.561,31.094A10.091,10.091,0,0,0,52.14,27.01a11.5,11.5,0,0,0,1.57-5.95,10.8,10.8,0,0,0-3.147-7.977Q47.42,9.894,41.351,9.89h-.29c.03.632.053,1.265.053,1.9a34.066,34.066,0,0,1-.518,5.9h.663A3.1,3.1,0,0,1,44.5,19.391a3.844,3.844,0,0,1,0,3.8,3.424,3.424,0,0,1-3.558,1.775H38.479a34.387,34.387,0,0,1-11.3,14.369V39.7h0v1.9h0v1.95h8.663V32.389h3.329L45.1,43.558h9.752l-7.291-12.48Z" transform="translate(-6.853 -9.89)" fill="#F77A21"></path>
+          <path id="Path_2" d="M32.134,24.983H29.49V17.692h4.762a34.7,34.7,0,0,0,.518-5.9c0-.64-.023-1.272-.053-1.9H20.835V22.751H9.033V9.89H.5V30.964h0v4.4h0v8.206H9.026V30.9H20.835v8.449a34.326,34.326,0,0,0,11.3-14.369Z" transform="translate(-0.5 -9.89)" fill="#FFB229"></path>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

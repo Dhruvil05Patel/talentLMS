@@ -39,3 +39,17 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local agent/editor instructions
+AGENTS.md
+CLAUDE.md
+.claude/
+.opencode/
+.cursor/
+.windsurf/
+.clinerules/
+.codex/
+.github/copilot-instructions.md
+
+# local credentials / scratch files
+dummy-creds.txt

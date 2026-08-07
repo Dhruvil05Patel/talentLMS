@@ -4,22 +4,30 @@ import { useState } from "react";
 import Link from "next/link";
 import { solutionsData } from "./navData";
 
-export default function DropdownSolutions({ onMouseEnter, onMouseLeave }) {
+type DropdownProps = {
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+};
+
+export default function DropdownSolutions({ onMouseEnter, onMouseLeave }: DropdownProps) {
   const [activeTab, setActiveTab] = useState("useCases"); // "useCases" or "industries"
 
   const tabs = [
     { id: "useCases", label: "By use case" },
     { id: "industries", label: "By industry" },
+    { id: "aiSolution", label: "AI Solutions" },
   ];
 
-  const items = activeTab === "useCases" ? solutionsData.useCases : solutionsData.industries;
-
-  // Simple icon placeholders matching the structure of your previous dropdown setups
-  const fallbackIcons = ["👥", "👤+", "🧼", "🔐", "🤝", "🛡️"];
+  const items =
+    activeTab === "useCases"
+      ? solutionsData.useCases
+      : activeTab === "industries"
+      ? solutionsData.industries
+      : solutionsData.aiSolution;
 
   return (
     <div
-      className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[820px] bg-white rounded-2xl shadow-xl border border-gray-100 p-6 z-50 grid grid-cols-12 gap-6"
+      className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-205 bg-white rounded-2xl shadow-xl border border-gray-100 p-6 z-50 grid grid-cols-12 gap-6"
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
@@ -41,22 +49,25 @@ export default function DropdownSolutions({ onMouseEnter, onMouseLeave }) {
       </div>
 
       {/* 2. MIDDLE SIDE: Filtered Navigation Items List */}
-      <div className="col-span-4 flex flex-col justify-between min-h-[320px]">
+      <div className="col-span-4 flex flex-col justify-between min-h-80">
         <ul className="space-y-1">
-          {items.map((item, index) => (
+          {items.map((item) => (
             <li key={item.label}>
               <Link
                 href={item.url}
                 className="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-colors duration-200 group"
               >
-                {/* Rounded Icon Ring Container */}
                 <div className="flex items-center justify-center w-9 h-9 rounded-xl border border-gray-100 bg-white shadow-sm shrink-0 group-hover:border-gray-200">
-                  <span className="text-sm text-gray-600">
-                    {fallbackIcons[index % fallbackIcons.length]}
-                  </span>
+                  {item.icon?.startsWith("/") || item.icon?.startsWith("http") ? (
+                    <img
+                      src={item.icon}
+                      alt={`${item.label} icon`}
+                      className="w-5 h-5 object-contain"
+                    />
+                  ) : (
+                    <span className="text-sm text-gray-600">{item.icon ?? "•"}</span>
+                  )}
                 </div>
-                
-                {/* Label */}
                 <span className="text-[14px] font-bold text-gray-800 group-hover:text-black transition-colors">
                   {item.label}
                 </span>
@@ -83,7 +94,7 @@ export default function DropdownSolutions({ onMouseEnter, onMouseLeave }) {
             {/* Awards Graphic Asset Grid Container */}
             <div className="relative w-full h-36 bg-[#FFD400] rounded-xl overflow-hidden mb-4 flex items-center justify-center p-4">
               <img
-                src="/images/awards-badges.png" // Replace with your awards banner image path
+                src="/images/navbar/solution/nav-bar_why-talentlms.webp" // Replace with your awards banner image path
                 alt="TalentLMS Industry Awards 2026"
                 className="max-w-full max-h-full object-contain"
               />

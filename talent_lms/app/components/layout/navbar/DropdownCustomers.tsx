@@ -3,7 +3,12 @@
 import Link from "next/link";
 import { customersData } from "./navData";
 
-export default function DropdownCustomers({ onMouseEnter, onMouseLeave }) {
+type DropdownProps = {
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+};
+
+export default function DropdownCustomers({ onMouseEnter, onMouseLeave }: DropdownProps) {
   return (
     <div
       className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[720px] bg-white rounded-2xl shadow-xl border border-gray-100 p-6 z-50 grid grid-cols-12 gap-6"
@@ -55,7 +60,7 @@ export default function DropdownCustomers({ onMouseEnter, onMouseLeave }) {
             {/* Network Bubble Logo Graphic Container */}
             <div className="relative w-full h-40 bg-white border border-gray-100 rounded-xl overflow-hidden mb-4 flex items-center justify-center p-2 shadow-inner">
               <img
-                src="/images/customer-network-cloud.png" // Replace with your cloud bubble brand graphic asset
+                src="/images/navbar/customers/customers-menu-768x471.webp" // Replace with your cloud bubble brand graphic asset
                 alt="Trusted by Global Teams"
                 className="max-w-full max-h-full object-contain"
               />

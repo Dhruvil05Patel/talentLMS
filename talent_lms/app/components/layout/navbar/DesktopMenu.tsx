@@ -8,7 +8,7 @@ export default function DesktopMenu() {
       {navItems.map((item) => (
         <Link
           key={item.title}
-          href={item.href}
+          href={item.href || "#"}
           className="flex items-center gap-1 text-[16px] font-medium text-[#202124] transition-colors hover:text-black"
         >
           {item.title}

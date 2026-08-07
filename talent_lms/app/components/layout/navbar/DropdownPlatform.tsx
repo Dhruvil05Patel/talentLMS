@@ -3,10 +3,15 @@
 import Link from "next/link";
 import { platformData } from "./navData";
 
-export default function DropdownPlatform({ onMouseEnter, onMouseLeave }) {
+type DropdownProps = {
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+};
+
+export default function DropdownPlatform({ onMouseEnter, onMouseLeave }: DropdownProps) {
   return (
     <div
-      className="absolute top-full left-1/2 -translate-x-1/3 mt-2 w-[760px] bg-white rounded-2xl shadow-xl border border-gray-100 p-6 z-50 grid grid-cols-12 gap-8"
+      className="absolute top-full left-1/2 -translate-x-1/3 mt-2 w-190 bg-white rounded-2xl shadow-xl border border-gray-100 p-6 z-50 grid grid-cols-12 gap-8"
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
@@ -26,7 +31,15 @@ export default function DropdownPlatform({ onMouseEnter, onMouseLeave }) {
                   className="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-all duration-200 group"
                 >
                   <div className="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-100 bg-white shadow-sm shrink-0 group-hover:border-gray-200">
-                    <span className="text-sm text-gray-500">⚙️</span> {/* Placeholder Icon */}
+                    {item.icon?.startsWith("/") || item.icon?.startsWith("http") ? (
+                      <img
+                        src={item.icon}
+                        alt={`${item.label} icon`}
+                        className="w-5 h-5 object-contain"
+                      />
+                    ) : (
+                      <span className="text-sm">{item.icon}</span>
+                    )}
                   </div>
                   <div className="flex flex-col">
                     <span className="text-[14px] font-bold text-gray-800 group-hover:text-black leading-tight">
@@ -55,12 +68,20 @@ export default function DropdownPlatform({ onMouseEnter, onMouseLeave }) {
                   className="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-all duration-200 group"
                 >
                   <div className="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-100 bg-white shadow-sm shrink-0 group-hover:border-gray-200">
-                    <span className="text-sm text-gray-500">✨</span> {/* Placeholder Icon */}
+                    {item.icon?.startsWith("/") || item.icon?.startsWith("http") ? (
+                      <img
+                        src={item.icon}
+                        alt={`${item.label} icon`}
+                        className="w-5 h-5 object-contain"
+                      />
+                    ) : (
+                      <span className="text-sm text-gray-500">{item.icon ?? "✨"}</span>
+                    )}
                   </div>
                   <div className="flex flex-col flex-1">
                     <div className="flex items-center gap-2">
                       <span className="text-[14px] font-bold text-gray-800 group-hover:text-black leading-tight">
-                        {item.label.split(" – ")[0]} {/* Trims text dynamically if preferred */}
+                        {item.label.split(" – ")[0]}
                       </span>
                       {item.badge && (
                         <span className="inline-flex items-center bg-green-100 text-green-700 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md tracking-wider">
@@ -93,7 +114,15 @@ export default function DropdownPlatform({ onMouseEnter, onMouseLeave }) {
                   className="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-all duration-200 group"
                 >
                   <div className="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-100 bg-white shadow-sm shrink-0 group-hover:border-gray-200">
-                    <span className="text-sm text-gray-500">📚</span> {/* Placeholder Icon */}
+                    {item.icon?.startsWith("/") || item.icon?.startsWith("http") ? (
+                      <img
+                        src={item.icon}
+                        alt={`${item.label} icon`}
+                        className="w-5 h-5 object-contain"
+                      />
+                    ) : (
+                      <span className="text-sm text-gray-500">{item.icon ?? "📚"}</span>
+                    )}
                   </div>
                   <div className="flex flex-col">
                     <span className="text-[14px] font-bold text-gray-800 group-hover:text-black leading-tight">
