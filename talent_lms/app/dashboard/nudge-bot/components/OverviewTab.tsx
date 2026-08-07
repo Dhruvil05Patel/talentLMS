@@ -2,6 +2,7 @@ import { overviewStats, upcomingRuns } from "../data/mockOverview";
 import type { NudgeHistoryItem, NudgeRule } from "../types/nudge";
 import ChannelBadge from "./ChannelBadge";
 import StatsCard from "./StatsCard";
+import { CheckCircle2, XCircle } from "lucide-react";
 
 interface OverviewTabProps {
   rules: NudgeRule[];
@@ -68,7 +69,11 @@ export default function OverviewTab({ rules, history, onInspect }: OverviewTabPr
                     <td className="py-3 pr-4"><ChannelBadge channel={item.channel} compact /></td>
                     <td className="py-3 pr-4">{item.createdAt}</td>
                     <td className={`py-3 text-xs font-bold ${item.status === "failed" ? "text-[#DC2626]" : "text-[#15803D]"}`}>
-                      {item.status === "failed" ? "✗ Failed" : "✓ Sent"}
+                      {item.status === "failed" ? (
+                        <span className="flex items-center gap-1"><XCircle size={14} /> Failed</span>
+                      ) : (
+                        <span className="flex items-center gap-1"><CheckCircle2 size={14} /> Sent</span>
+                      )}
                     </td>
                   </tr>
                 ))}

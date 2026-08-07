@@ -1,5 +1,6 @@
 import ChannelBadge from "./ChannelBadge";
 import type { NudgeHistoryItem } from "../types/nudge";
+import { CheckCircle2, XCircle } from "lucide-react";
 
 export default function HistoryTable({ items }: { items: NudgeHistoryItem[] }) {
   return (
@@ -32,7 +33,11 @@ export default function HistoryTable({ items }: { items: NudgeHistoryItem[] }) {
                 <td className="px-5 py-4"><ChannelBadge channel={item.channel} compact /></td>
                 <td className="px-5 py-4">{item.createdAt}</td>
                 <td className={`px-5 py-4 text-xs font-bold ${item.status === "failed" ? "text-[#DC2626]" : "text-[#15803D]"}`}>
-                  {item.status === "failed" ? "✗ Failed" : "✓ Sent"}
+                  {item.status === "failed" ? (
+                    <span className="flex items-center gap-1"><XCircle size={14} /> Failed</span>
+                  ) : (
+                    <span className="flex items-center gap-1"><CheckCircle2 size={14} /> Sent</span>
+                  )}
                 </td>
                 <td className="px-5 py-4">
                   <button className="text-sm font-bold text-[#F96A1E]">

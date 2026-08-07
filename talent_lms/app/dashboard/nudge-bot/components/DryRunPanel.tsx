@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { X, CheckCircle2, XCircle } from "lucide-react";
 import ChannelBadge from "./ChannelBadge";
 import type { DryRunResult } from "../types/nudge";
 
@@ -32,7 +32,7 @@ export default function DryRunPanel({ results, onCancel, onConfirm }: DryRunPane
             }`}
           >
             <span className={result.status === "send" ? "font-bold text-[#15803D]" : "font-bold text-[#DC2626]"}>
-              {result.status === "send" ? "✓" : "✗"}
+              {result.status === "send" ? <CheckCircle2 size={18} /> : <XCircle size={18} />}
             </span>
             <span className="font-semibold">{result.learner}</span>
             <span>{result.course}</span>

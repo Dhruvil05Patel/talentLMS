@@ -1,4 +1,4 @@
-import { RefreshCw, X } from "lucide-react";
+import { RefreshCw, X, Sparkles, Save } from "lucide-react";
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
@@ -53,7 +53,7 @@ export default function RuleDrawer({
           </div>
           <div className="mt-4 flex items-center justify-between gap-3">
             <button className="text-sm font-semibold text-[#DC2626]">Delete</button>
-            <button className="rounded-full bg-[#1A5438] px-5 py-2.5 text-sm font-bold text-white">Save ●</button>
+            <button className="flex items-center gap-2 rounded-full bg-[#1A5438] px-5 py-2.5 text-sm font-bold text-white">Save <Save size={16} /></button>
           </div>
         </header>
 
@@ -118,7 +118,7 @@ export default function RuleDrawer({
 
             <div className="rounded-xl border border-[#BBF7D0] bg-[#F0FDF4] p-4">
               <div className="flex items-center justify-between gap-3">
-                <p className="text-xs font-bold uppercase tracking-[0.08em] text-[#15803D]">✦ Preview</p>
+                <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.08em] text-[#15803D]"><Sparkles size={14} /> Preview</p>
                 <button
                   className="rounded-full p-1.5 text-[#F96A1E]"
                   aria-label="Regenerate preview"
